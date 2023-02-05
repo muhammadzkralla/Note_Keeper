@@ -2,6 +2,7 @@ package com.zkrallah.notekeeper
 
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -21,12 +22,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityMainBinding
     private lateinit var dialog: AlertDialog
+    private lateinit var preferences: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        preferences = getSharedPreferences("checkbox", MODE_PRIVATE)
 
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.progress_bar, null)
@@ -47,6 +50,20 @@ class MainActivity : AppCompatActivity() {
             createAccount(binding.edtEmail.text.toString(), binding.edtPwd.text.toString())
         }
 
+        binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                val editor = preferences.edit()
+                editor.putString("remember", "true")
+                editor.putString("email", binding.edtEmail.text.toString())
+                editor.putString("password", binding.edtPwd.text.toString())
+                editor.apply()
+            }else if (!isChecked){
+                val editor = preferences.edit()
+                editor.putString("remember", "false")
+                editor.apply()
+            }
+        }
+
     }
 
     private fun createAccount(email: String, password: String) {
@@ -61,7 +78,9 @@ class MainActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT).show()
                     val user = auth.currentUser
                     addUserToFireBase(user)
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("MainActivity", "createUserWithEmail:failure", task.exception)
@@ -81,7 +100,9 @@ class MainActivity : AppCompatActivity() {
                     Log.d("MainActivity", "signInWithEmail:success")
                     Toast.makeText(baseContext, "Authentication Success.",
                         Toast.LENGTH_SHORT).show()
-                    startActivity(Intent(this, HomeActivity::class.java))
+                    val intent = Intent(this, HomeActivity::class.java)
+                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    startActivity(intent)
                 } else {
                     // If sign in fails, display a message to the user.
                     Log.w("MainActivity", "signInWithEmail:failure", task.exception)

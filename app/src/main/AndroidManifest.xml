@@ -14,18 +14,25 @@
         android:theme="@style/Theme.NoteKeeper"
         tools:targetApi="31">
         <activity
-            android:name=".ui.home.HomeActivity"
-            android:exported="false"
-            android:label="@string/title_activity_home"
-            android:theme="@style/Theme.NoteKeeper" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name=".SplashScreen"
+            android:exported="true"
+            android:theme="@style/Theme.NoteKeeper.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+        </activity>
+        <activity
+            android:name=".ui.home.HomeActivity"
+            android:exported="false"
+            android:label="Your Notes"
+            android:theme="@style/Theme.NoteKeeper" />
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+
         </activity>
     </application>
 

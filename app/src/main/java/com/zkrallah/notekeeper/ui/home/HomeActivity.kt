@@ -43,8 +43,14 @@ class HomeActivity : AppCompatActivity() {
             builder.setCancelable(false)
             builder.setTitle("Your E-mail is : ")
             builder.setMessage(currentUser.email)
+            builder.setCancelable(true)
             builder.setPositiveButton("SIGN OUT") { _,_ ->
                 auth.signOut()
+                val preferences = getSharedPreferences("checkbox", MODE_PRIVATE)
+                val editor = preferences.edit()
+                editor.remove("remember")
+                editor.putString("remember", "false")
+                editor.apply()
                 Toast.makeText(this, "Your Email is now ${auth.currentUser?.email}", Toast.LENGTH_LONG).show()
                 finish()
             }
