@@ -17,7 +17,7 @@
             android:name=".ui.home.HomeActivity"
             android:exported="false"
             android:label="@string/title_activity_home"
-            android:theme="@style/Theme.NoteKeeper.NoActionBar" />
+            android:theme="@style/Theme.NoteKeeper" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

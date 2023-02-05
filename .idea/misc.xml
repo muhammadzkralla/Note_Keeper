@@ -4,12 +4,17 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/drawable/edittext_bg.xml" value="0.136" />
+        <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/drawable/ic_baseline_add_24.xml" value="0.136" />
+        <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/drawable/ic_baseline_person_24.xml" value="0.136" />
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/drawable/ic_login.xml" value="0.136" />
+        <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/account_info.xml" value="0.16485507246376813" />
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/activity_home.xml" value="0.16485507246376813" />
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/activity_main.xml" value="0.152" />
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/activity_verification.xml" value="0.16485507246376813" />
+        <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/custom_imageview.xml" value="0.16485507246376813" />
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/layout_register.xml" value="0.16485507246376813" />
         <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/layout/progress_bar.xml" value="0.16485507246376813" />
+        <entry key="..\:/Android Projects/NoteKeeper/app/src/main/res/menu/menu.xml" value="0.21875" />
       </map>
     </option>
   </component>
