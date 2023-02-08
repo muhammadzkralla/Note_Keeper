@@ -1,9 +1,9 @@
 package com.zkrallah.notekeeper.ui.home
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -13,6 +13,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.zkrallah.notekeeper.R
 import com.zkrallah.notekeeper.databinding.ActivityHomeBinding
+import com.zkrallah.notekeeper.ui.add.AddNoteActivity
 
 
 class HomeActivity : AppCompatActivity() {
@@ -28,6 +29,10 @@ class HomeActivity : AppCompatActivity() {
 
         auth = Firebase.auth
         currentUser = auth.currentUser!!
+
+        binding.fab.setOnClickListener {
+            startActivity(Intent(this, AddNoteActivity::class.java))
+        }
 
     }
 
