@@ -15,9 +15,12 @@
         android:theme="@style/Theme.NoteKeeper"
         tools:targetApi="31">
         <activity
+            android:name=".ui.show.ShowNoteActivity"
+            android:exported="true" />
+        <activity
             android:name=".ui.add.AddNoteActivity"
             android:exported="false"
-            android:label="Add a Note"/>
+            android:label="Add a Note" />
         <activity
             android:name=".SplashScreen"
             android:exported="true"
@@ -35,7 +38,7 @@
             android:theme="@style/Theme.NoteKeeper" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true" />
     </application>
 
 </manifest>

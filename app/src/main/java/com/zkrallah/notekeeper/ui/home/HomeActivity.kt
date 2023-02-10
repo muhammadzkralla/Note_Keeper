@@ -16,7 +16,9 @@ import com.google.firebase.ktx.Firebase
 import com.zkrallah.notekeeper.R
 import com.zkrallah.notekeeper.adapter.HomeAdapter
 import com.zkrallah.notekeeper.databinding.ActivityHomeBinding
+import com.zkrallah.notekeeper.local.entities.Note
 import com.zkrallah.notekeeper.ui.add.AddNoteActivity
+import com.zkrallah.notekeeper.ui.show.ShowNoteActivity
 
 
 class HomeActivity : AppCompatActivity() {
@@ -53,6 +55,14 @@ class HomeActivity : AppCompatActivity() {
         viewModel.userNotes.observe(this){
             it?.let {
                 adapter = HomeAdapter(it)
+                adapter.setItemClickListener(object: HomeAdapter.OnItemClickListener{
+                    override fun onItemClick(note: Note) {
+                        val intent = Intent(this@HomeActivity, ShowNoteActivity::class.java)
+                        intent.putExtra("noteID", note.id.toString())
+                        startActivity(intent)
+                    }
+
+                })
                 binding.recyclerHome.adapter = adapter
             }
         }

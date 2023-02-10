@@ -1,9 +1,7 @@
 package com.zkrallah.notekeeper.local
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.zkrallah.notekeeper.local.entities.Note
 
 @Dao
@@ -20,4 +18,10 @@ interface NoteDAO {
 
     @Query("DELETE FROM notes_table WHERE id = :noteId")
     suspend fun deleteNote(noteId: Long): Int
+
+    @Update(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun updateNote(note: Note)
+
+    @Query("SELECT * FROM notes_table WHERE id=:noteId")
+    suspend fun getNoteById(noteId: Long): Note?
 }
