@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        preferences = getSharedPreferences("checkbox", MODE_PRIVATE)
+        preferences = getSharedPreferences("rememberMe", MODE_PRIVATE)
 
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.progress_bar, null)
@@ -50,20 +50,6 @@ class MainActivity : AppCompatActivity() {
             createAccount(binding.edtEmail.text.toString(), binding.edtPwd.text.toString())
         }
 
-        binding.checkBox.setOnCheckedChangeListener { _, isChecked ->
-            if (isChecked) {
-                val editor = preferences.edit()
-                editor.putString("remember", "true")
-                editor.putString("email", binding.edtEmail.text.toString())
-                editor.putString("password", binding.edtPwd.text.toString())
-                editor.apply()
-            }else if (!isChecked){
-                val editor = preferences.edit()
-                editor.putString("remember", "false")
-                editor.apply()
-            }
-        }
-
     }
 
     private fun createAccount(email: String, password: String) {
@@ -77,6 +63,11 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(baseContext, "Registration Success.",
                         Toast.LENGTH_SHORT).show()
                     val user = auth.currentUser
+                    val editor = preferences.edit()
+                    editor.putString("remember", "true")
+                    editor.putString("userID", auth.currentUser?.uid)
+                    editor.putString("userEmail", auth.currentUser?.email)
+                    editor.apply()
                     addUserToFireBase(user)
                     val intent = Intent(this, HomeActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
@@ -100,6 +91,11 @@ class MainActivity : AppCompatActivity() {
                     Log.d("MainActivity", "signInWithEmail:success")
                     Toast.makeText(baseContext, "Authentication Success.",
                         Toast.LENGTH_SHORT).show()
+                    val editor = preferences.edit()
+                    editor.putString("remember", "true")
+                    editor.putString("userID", auth.currentUser?.uid)
+                    editor.putString("userEmail", auth.currentUser?.email)
+                    editor.apply()
                     val intent = Intent(this, HomeActivity::class.java)
                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                     startActivity(intent)

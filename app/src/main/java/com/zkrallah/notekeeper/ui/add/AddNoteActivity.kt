@@ -2,6 +2,7 @@ package com.zkrallah.notekeeper.ui.add
 
 import android.app.Activity
 import android.content.Intent
+import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
@@ -9,8 +10,6 @@ import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.ktx.Firebase
 import com.zkrallah.notekeeper.adapter.AddNoteAdapter
 import com.zkrallah.notekeeper.databinding.ActivityAddNoteBinding
 import com.zkrallah.notekeeper.local.entities.Note
@@ -22,11 +21,16 @@ class AddNoteActivity : AppCompatActivity() {
     private lateinit var binding: ActivityAddNoteBinding
     private lateinit var imageUris: ArrayList<String>
     private val REQUEST_CODE = 200
+    private lateinit var preferences: SharedPreferences
+    private lateinit var uid: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAddNoteBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        preferences = getSharedPreferences("rememberMe", MODE_PRIVATE)
+        uid = preferences.getString("userID", "").toString()
 
         imageUris = arrayListOf()
 
@@ -48,7 +52,7 @@ class AddNoteActivity : AppCompatActivity() {
                     title,
                     body,
                     date,
-                    Firebase.auth.currentUser!!.uid,
+                    uid,
                     imageUris.ifEmpty { null })
 
                 viewModel.insert(note)
