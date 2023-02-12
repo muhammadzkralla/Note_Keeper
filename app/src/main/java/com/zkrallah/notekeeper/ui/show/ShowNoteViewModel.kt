@@ -25,4 +25,10 @@ class ShowNoteViewModel : ViewModel() {
             _note.postValue(database.noteDAO().getNoteById(id))
         }
     }
+
+    fun deleteNote(id: Long){
+        viewModelScope.launch (Dispatchers.IO){
+            database.noteDAO().deleteNote(id)
+        }
+    }
 }

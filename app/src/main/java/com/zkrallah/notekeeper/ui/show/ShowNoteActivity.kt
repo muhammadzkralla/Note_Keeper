@@ -1,11 +1,14 @@
 package com.zkrallah.notekeeper.ui.show
 
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.zkrallah.notekeeper.R
 import com.zkrallah.notekeeper.adapter.AddNoteAdapter
 import com.zkrallah.notekeeper.databinding.ActivityShowNoteBinding
 import com.zkrallah.notekeeper.local.entities.Note
@@ -22,6 +25,7 @@ class ShowNoteActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         viewModel = ViewModelProvider(this)[ShowNoteViewModel::class.java]
+
         binding.images.layoutManager =
             LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
         val id = intent.getStringExtra("noteID")?.toLong()
@@ -58,6 +62,23 @@ class ShowNoteActivity : AppCompatActivity() {
             finish()
         }
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.delete, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val id = item.itemId
+        if (id == R.id.delete) {
+            viewModel.deleteNote(currentNote.id)
+            Toast.makeText(this@ShowNoteActivity, "Note Deleted !", Toast.LENGTH_SHORT)
+                .show()
+            finish()
+            return true
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 }

@@ -98,7 +98,9 @@ class HomeActivity : AppCompatActivity() {
                 val adapter = HomeAdapter(it)
                 adapter.setItemClickListener(object: HomeAdapter.OnItemClickListener{
                     override fun onItemClick(note: Note) {
-                        TODO("Not yet implemented")
+                        Toast.makeText(this@HomeActivity,
+                            note.title, Toast.LENGTH_SHORT)
+                            .show()
                     }
                 })
                 recycler.adapter = adapter
