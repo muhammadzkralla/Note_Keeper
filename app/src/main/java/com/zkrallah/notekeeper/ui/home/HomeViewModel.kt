@@ -34,30 +34,15 @@ class HomeViewModel : ViewModel() {
                 .child(authorId).child("Notes")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        val differences = arrayListOf<Note>()
-                        // If data is online not offline
-                        for (dataset in snapshot.children) {
-                            val dataShot = dataset.getValue(Note::class.java)!!
-                            differences.add(dataShot)
-                            for (note in list) {
-                                if (note == dataShot) {
-                                    differences.remove(dataShot)
-                                    break
-                                }
-                            }
-                        }
-                        // If data is online not offline
-                        for (note in list) {
-                            differences.add(note)
-                            for (dataset in snapshot.children) {
-                                val dataShot = dataset.getValue(Note::class.java)!!
-                                if (note == dataShot) {
-                                    differences.remove(note)
-                                    break
-                                }
-                            }
-                        }
-                        conflicts.postValue(differences)
+                        val onlineSet = mutableSetOf<Note>()
+                        for (dataset in snapshot.children)
+                            onlineSet.add(dataset.getValue(Note::class.java)!!)
+
+                        val offlineSet = list.toSet()
+                        val all = offlineSet union onlineSet
+                        val common = offlineSet intersect onlineSet
+                        val final = all subtract common
+                        conflicts.postValue(final.toList())
                     }
 
                     override fun onCancelled(error: DatabaseError) {
