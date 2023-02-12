@@ -28,7 +28,6 @@ class HomeViewModel : ViewModel() {
     }
 
     fun syncFirebase(list: List<Note>, authorId: String) {
-        getUserNotes(authorId)
         viewModelScope.launch(Dispatchers.Unconfined) {
             FirebaseDatabase.getInstance().getReference("Users")
                 .child(authorId).child("Notes")
