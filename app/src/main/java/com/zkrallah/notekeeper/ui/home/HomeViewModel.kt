@@ -1,6 +1,12 @@
 package com.zkrallah.notekeeper.ui.home
 
-import androidx.lifecycle.*
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.zkrallah.notekeeper.local.NoteDatabase
 import com.zkrallah.notekeeper.local.entities.Note
 import kotlinx.coroutines.Dispatchers
@@ -12,10 +18,52 @@ class HomeViewModel : ViewModel() {
 
     private val _userNotes = MutableLiveData<List<Note>>()
     val userNotes = _userNotes
+    private val _conflicts = MutableLiveData<List<Note>>()
+    val conflicts = _conflicts
 
-    fun getUserNotes(authorId: String){
-        viewModelScope.launch (Dispatchers.IO){
+    fun getUserNotes(authorId: String) {
+        viewModelScope.launch(Dispatchers.IO) {
             _userNotes.postValue(database.noteDAO().getUserNotes(authorId))
+        }
+    }
+
+    fun syncFirebase(list: List<Note>, authorId: String) {
+        getUserNotes(authorId)
+        viewModelScope.launch(Dispatchers.Unconfined) {
+            FirebaseDatabase.getInstance().getReference("Users")
+                .child(authorId).child("Notes")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val differences = arrayListOf<Note>()
+                        // If data is online not offline
+                        for (dataset in snapshot.children) {
+                            val dataShot = dataset.getValue(Note::class.java)!!
+                            differences.add(dataShot)
+                            for (note in list) {
+                                if (note == dataShot) {
+                                    differences.remove(dataShot)
+                                    break
+                                }
+                            }
+                        }
+                        // If data is online not offline
+                        for (note in list) {
+                            differences.add(note)
+                            for (dataset in snapshot.children) {
+                                val dataShot = dataset.getValue(Note::class.java)!!
+                                if (note == dataShot) {
+                                    differences.remove(note)
+                                    break
+                                }
+                            }
+                        }
+                        conflicts.postValue(differences)
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        TODO("Not yet implemented")
+                    }
+                })
         }
     }
 }
