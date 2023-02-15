@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.zkrallah.notekeeper.R
 import com.zkrallah.notekeeper.adapter.HomeAdapter
+import com.zkrallah.notekeeper.adapter.SyncNoteAdapter
 import com.zkrallah.notekeeper.databinding.ActivityHomeBinding
 import com.zkrallah.notekeeper.local.entities.Note
 import com.zkrallah.notekeeper.ui.add.AddNoteActivity
@@ -28,16 +29,15 @@ import com.zkrallah.notekeeper.ui.show.ShowNoteActivity
 class HomeActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityHomeBinding
-    private lateinit var adapter: HomeAdapter
     private lateinit var viewModel: HomeViewModel
     private lateinit var preferences: SharedPreferences
     private lateinit var uid: String
-    private lateinit var email:String
-    private var onlineState = false
+    private lateinit var email: String
     private lateinit var dialog: AlertDialog
     private lateinit var recycler: RecyclerView
     private lateinit var notes: List<Note>
-    lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var notesToBeSynced: MutableSet<Note>
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +49,7 @@ class HomeActivity : AppCompatActivity() {
         email = preferences.getString("userEmail", "").toString()
 
         notes = arrayListOf()
-        onlineState = isOnline(this)
+        notesToBeSynced = mutableSetOf()
         buildAlertDialog()
 
         viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
@@ -59,7 +59,8 @@ class HomeActivity : AppCompatActivity() {
 
         swipeRefreshLayout = binding.container
         swipeRefreshLayout.setOnRefreshListener {
-            if (onlineState)sync(notes)
+            if (isOnline(this)) sync(notes)
+            else Toast.makeText(this, "OFFLINE MODE", Toast.LENGTH_SHORT).show()
             swipeRefreshLayout.isRefreshing = false
         }
 
@@ -69,12 +70,12 @@ class HomeActivity : AppCompatActivity() {
 
     }
 
-    private fun updateUI(){
+    private fun updateUI() {
         if (uid.isNotEmpty()) {
             viewModel.getUserNotes(uid)
             viewModel.userNotes.observe(this) {
                 it?.let {
-                    adapter = HomeAdapter(it)
+                    val adapter = HomeAdapter(it)
                     adapter.setItemClickListener(object : HomeAdapter.OnItemClickListener {
                         override fun onItemClick(note: Note) {
                             val intent = Intent(this@HomeActivity, ShowNoteActivity::class.java)
@@ -94,15 +95,8 @@ class HomeActivity : AppCompatActivity() {
         viewModel.syncFirebase(list, uid)
         viewModel.conflicts.observe(this) {
             it?.let {
-
-                val adapter = HomeAdapter(it)
-                adapter.setItemClickListener(object: HomeAdapter.OnItemClickListener{
-                    override fun onItemClick(note: Note) {
-                        Toast.makeText(this@HomeActivity,
-                            note.title, Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                })
+                val adapter = SyncNoteAdapter(it)
+                notesToBeSynced = adapter.toBeSynced
                 recycler.adapter = adapter
                 dialog.show()
             }
@@ -118,7 +112,14 @@ class HomeActivity : AppCompatActivity() {
         builder.setView(dialogView)
         builder.setCancelable(true)
         builder.setTitle("CONFLICTS")
-        builder.setMessage("THIS DATA IS NOT SYNCED !")
+        builder.setMessage(
+            "THIS DATA IS NOT SYNCED" +
+                    ", PLEASE SELECT NOTES TO KEEP " +
+                    "AND THE OTHERS WILL BE REMOVED AUTOMATICALLY."
+        )
+        builder.setPositiveButton("SYNC") { _, _ ->
+            Toast.makeText(this@HomeActivity, "${notesToBeSynced.size}", Toast.LENGTH_SHORT).show()
+        }
         dialog = builder.create()
     }
 
@@ -139,7 +140,6 @@ class HomeActivity : AppCompatActivity() {
                 return true
             }
         }
-        Toast.makeText(context, "OFFLINE", Toast.LENGTH_LONG).show()
         return false
     }
 
@@ -156,7 +156,7 @@ class HomeActivity : AppCompatActivity() {
             builder.setTitle("Your E-mail is : ")
             builder.setMessage(email)
             builder.setCancelable(true)
-            builder.setPositiveButton("SIGN OUT") { _,_ ->
+            builder.setPositiveButton("SIGN OUT") { _, _ ->
                 val editor = preferences.edit()
                 editor.remove("remember")
                 editor.remove("userID")
@@ -175,7 +175,6 @@ class HomeActivity : AppCompatActivity() {
     }
 
     override fun onResume() {
-        onlineState = isOnline(this)
         updateUI()
         super.onResume()
     }
