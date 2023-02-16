@@ -50,4 +50,49 @@ class HomeViewModel : ViewModel() {
                 })
         }
     }
+
+    fun syncNotes(local: List<Note>, toBeSynced: MutableSet<Note>, authorId: String) {
+        viewModelScope.launch {
+            val reference = FirebaseDatabase.getInstance()
+                .getReference("Users")
+                .child(authorId).child("Notes")
+
+            reference.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val onlineSet = mutableSetOf<Note>()
+                    for (dataset in snapshot.children)
+                        onlineSet.add(dataset.getValue(Note::class.java)!!)
+
+                    for (note in toBeSynced) {
+                        if (!onlineSet.contains(note)) {
+                            val map = mapOf(
+                                "title" to note.title,
+                                "body" to note.body,
+                                "date" to note.date,
+                                "author" to note.author
+                            )
+                            reference.push().setValue(map)
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+            })
+        }
+        viewModelScope.launch {
+            for (note in toBeSynced) {
+                if (!local.contains(note))
+                    database.noteDAO().insert(
+                        Note(
+                            note.title,
+                            note.body,
+                            note.date,
+                            authorId,
+                            note.images?.ifEmpty { null })
+                    )
+            }
+        }
+    }
 }

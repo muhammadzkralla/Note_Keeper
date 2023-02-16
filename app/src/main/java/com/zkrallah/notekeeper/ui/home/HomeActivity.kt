@@ -61,7 +61,6 @@ class HomeActivity : AppCompatActivity() {
         swipeRefreshLayout.setOnRefreshListener {
             if (isOnline(this)) sync(notes)
             else Toast.makeText(this, "OFFLINE MODE", Toast.LENGTH_SHORT).show()
-            swipeRefreshLayout.isRefreshing = false
         }
 
         binding.fab.setOnClickListener {
@@ -98,6 +97,7 @@ class HomeActivity : AppCompatActivity() {
                 val adapter = SyncNoteAdapter(it)
                 notesToBeSynced = adapter.toBeSynced
                 recycler.adapter = adapter
+                swipeRefreshLayout.isRefreshing = false
                 dialog.show()
             }
         }
@@ -118,7 +118,8 @@ class HomeActivity : AppCompatActivity() {
                     "AND THE OTHERS WILL BE REMOVED AUTOMATICALLY."
         )
         builder.setPositiveButton("SYNC") { _, _ ->
-            Toast.makeText(this@HomeActivity, "${notesToBeSynced.size}", Toast.LENGTH_SHORT).show()
+            viewModel.syncNotes(notes, notesToBeSynced, uid)
+            updateUI()
         }
         dialog = builder.create()
     }
