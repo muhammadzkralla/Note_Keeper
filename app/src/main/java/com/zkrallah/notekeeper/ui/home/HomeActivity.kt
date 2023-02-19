@@ -129,8 +129,8 @@ class HomeActivity : AppCompatActivity() {
         builder.setPositiveButton("SYNC") { _, _ ->
             val notesToBeDeleted = (conflicts subtract  notesToBeSynced) as MutableSet<Note>
             viewModel.syncNotes(notes, notesToBeSynced, notesToBeDeleted, uid)
-            finish();
-            startActivity(getIntent());
+            finish()
+            startActivity(intent)
         }
         dialog = builder.create()
     }
