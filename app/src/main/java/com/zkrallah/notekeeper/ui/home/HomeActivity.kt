@@ -36,6 +36,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var dialog: AlertDialog
     private lateinit var recycler: RecyclerView
     private lateinit var notes: List<Note>
+    private lateinit var conflicts: MutableSet<Note>
     private lateinit var notesToBeSynced: MutableSet<Note>
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
 
@@ -95,10 +96,13 @@ class HomeActivity : AppCompatActivity() {
         viewModel.conflicts.observe(this) {
             it?.let {
                 val adapter = SyncNoteAdapter(it)
-                notesToBeSynced = adapter.toBeSynced
-                recycler.adapter = adapter
+                if (it.isNotEmpty()) {
+                    conflicts = it.toSet() as MutableSet<Note>
+                    notesToBeSynced = adapter.toBeSynced
+                    recycler.adapter = adapter
+                    dialog.show()
+                }
                 swipeRefreshLayout.isRefreshing = false
-                dialog.show()
             }
         }
     }
@@ -118,7 +122,8 @@ class HomeActivity : AppCompatActivity() {
                     "AND THE OTHERS WILL BE REMOVED AUTOMATICALLY."
         )
         builder.setPositiveButton("SYNC") { _, _ ->
-            viewModel.syncNotes(notes, notesToBeSynced, uid)
+            val notesToBeDeleted = (conflicts subtract  notesToBeSynced) as MutableSet<Note>
+            viewModel.syncNotes(notes, notesToBeSynced, notesToBeDeleted, uid)
             updateUI()
         }
         dialog = builder.create()

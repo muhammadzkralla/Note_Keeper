@@ -28,7 +28,7 @@ class HomeViewModel : ViewModel() {
     }
 
     fun syncFirebase(list: List<Note>, authorId: String) {
-        viewModelScope.launch(Dispatchers.Unconfined) {
+        viewModelScope.launch(Dispatchers.IO) {
             FirebaseDatabase.getInstance().getReference("Users")
                 .child(authorId).child("Notes")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -51,8 +51,8 @@ class HomeViewModel : ViewModel() {
         }
     }
 
-    fun syncNotes(local: List<Note>, toBeSynced: MutableSet<Note>, authorId: String) {
-        viewModelScope.launch {
+    fun syncNotes(local: List<Note>, toBeSynced: MutableSet<Note>, toBeDeleted: MutableSet<Note>, authorId: String) {
+        viewModelScope.launch (Dispatchers.IO){
             val reference = FirebaseDatabase.getInstance()
                 .getReference("Users")
                 .child(authorId).child("Notes")
@@ -81,7 +81,7 @@ class HomeViewModel : ViewModel() {
                 }
             })
         }
-        viewModelScope.launch {
+        viewModelScope.launch (Dispatchers.IO){
             for (note in toBeSynced) {
                 if (!local.contains(note))
                     database.noteDAO().insert(
@@ -92,6 +92,41 @@ class HomeViewModel : ViewModel() {
                             authorId,
                             note.images?.ifEmpty { null })
                     )
+            }
+        }
+        deleteUnwantedNotes(local, toBeDeleted, authorId)
+    }
+
+    private fun deleteUnwantedNotes(local: List<Note>, toBeRemoved: Set<Note>, authorId: String){
+        viewModelScope.launch (Dispatchers.IO){
+            val reference = FirebaseDatabase.getInstance().getReference("Users")
+                .child(authorId).child("Notes")
+
+            reference.addListenerForSingleValueEvent(object: ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (note in toBeRemoved){
+                        for (dataset in snapshot.children){
+                            val dataShot = dataset.getValue(Note::class.java)!!
+                            if (dataShot == note){
+                                reference.child(dataset.key.toString()).removeValue()
+                                break
+                            }
+                        }
+                    }
+
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    TODO("Not yet implemented")
+                }
+
+            })
+            viewModelScope.launch (Dispatchers.IO){
+                for (note in toBeRemoved) {
+                    if (local.contains(note)) {
+                        database.noteDAO().deleteNote(note.id)
+                    }
+                }
             }
         }
     }
