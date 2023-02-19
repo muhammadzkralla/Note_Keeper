@@ -55,13 +55,12 @@ class HomeActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
         binding.recyclerHome.layoutManager = GridLayoutManager(this, 2)
+        swipeRefreshLayout = binding.container
 
         updateUI()
 
-        swipeRefreshLayout = binding.container
         swipeRefreshLayout.setOnRefreshListener {
-            if (isOnline(this)) sync(notes)
-            else Toast.makeText(this, "OFFLINE MODE", Toast.LENGTH_SHORT).show()
+            updateUI()
         }
 
         binding.fab.setOnClickListener {
@@ -88,6 +87,7 @@ class HomeActivity : AppCompatActivity() {
                     notes = it
                 }
             }
+            swipeRefreshLayout.isRefreshing = false
         }
     }
 
@@ -101,7 +101,12 @@ class HomeActivity : AppCompatActivity() {
                     notesToBeSynced = adapter.toBeSynced
                     recycler.adapter = adapter
                     dialog.show()
-                }
+                }else
+                    Toast.makeText(
+                        this@HomeActivity,
+                        "ALL SYNCED",
+                        Toast.LENGTH_SHORT).show()
+
                 swipeRefreshLayout.isRefreshing = false
             }
         }
@@ -124,7 +129,8 @@ class HomeActivity : AppCompatActivity() {
         builder.setPositiveButton("SYNC") { _, _ ->
             val notesToBeDeleted = (conflicts subtract  notesToBeSynced) as MutableSet<Note>
             viewModel.syncNotes(notes, notesToBeSynced, notesToBeDeleted, uid)
-            updateUI()
+            finish();
+            startActivity(getIntent());
         }
         dialog = builder.create()
     }
@@ -176,6 +182,10 @@ class HomeActivity : AppCompatActivity() {
             dialog.show()
 
             return true
+        }
+        if (id == R.id.sync){
+            if (isOnline(this)) sync(notes)
+            else Toast.makeText(this, "OFFLINE MODE", Toast.LENGTH_SHORT).show()
         }
         return super.onOptionsItemSelected(item)
     }

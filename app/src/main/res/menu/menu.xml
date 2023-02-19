@@ -2,6 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/sync"
+        android:title="sync"
+        android:icon="@drawable/ic_baseline_sync_24"
+        app:showAsAction="ifRoom" />
+
+    <item
         android:id="@+id/account"
         android:title="info"
         android:icon="@drawable/ic_baseline_person_24"
