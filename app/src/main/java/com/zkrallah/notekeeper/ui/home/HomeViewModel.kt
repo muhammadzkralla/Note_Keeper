@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
+import java.io.File
 
 class HomeViewModel : ViewModel() {
 
@@ -95,15 +96,21 @@ class HomeViewModel : ViewModel() {
         }
         viewModelScope.launch(Dispatchers.IO) {
             for (note in toBeSynced) {
-                if (!local.contains(note))
+                if (!local.contains(note)) {
+                    var images = listOf<String>()
+                    if (note.images != null) {
+                        images = downloadImages(note)
+                    }
+
                     database.noteDAO().insert(
                         Note(
                             note.title,
                             note.body,
                             note.date,
                             authorId,
-                            note.images?.ifEmpty { null })
+                            images.ifEmpty { null })
                     )
+                }
             }
         }
         deleteUnwantedNotes(local, toBeDeleted, authorId)
@@ -153,11 +160,25 @@ class HomeViewModel : ViewModel() {
                 .putFile(Uri.parse(note.images!![count]))
             tasks.add(task)
         }
-        runBlocking {
+        runBlocking(Dispatchers.Unconfined) {
             tasks.forEach {
                 urls.add(it.await().storage.downloadUrl.await().toString())
             }
         }
         return urls
+    }
+
+    private fun downloadImages(note: Note): List<String> {
+        val uris = mutableListOf<String>()
+        val storage = FirebaseStorage.getInstance().reference
+        for (count in 0 until note.images!!.size){
+            val file = storage.child("images/" + note.title + note.body + count.toString())
+            val localFile = File.createTempFile(note.title + note.body + count.toString(), "")
+            runBlocking(Dispatchers.Unconfined) {
+                file.getFile(localFile).await()
+                uris.add(localFile.toURI().toString())
+            }
+        }
+        return uris
     }
 }
