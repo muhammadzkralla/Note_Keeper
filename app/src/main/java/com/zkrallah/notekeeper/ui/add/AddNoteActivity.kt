@@ -45,7 +45,7 @@ class AddNoteActivity : AppCompatActivity() {
             val title = binding.title.editText?.text.toString()
             val body = binding.body.editText?.text.toString()
             val time = Calendar.getInstance().time
-            val formatter = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.ROOT)
+            val formatter = SimpleDateFormat("MMM dd yyyy HH:mm", Locale.ROOT)
             val date = formatter.format(time)
             if (title.isNotEmpty() || body.isNotEmpty()) {
                 val note = Note(
