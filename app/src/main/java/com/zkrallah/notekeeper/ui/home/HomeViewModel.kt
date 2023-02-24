@@ -109,6 +109,13 @@ class HomeViewModel : ViewModel() {
                     val dataShot = dataset.getValue(Note::class.java)!!
                     if (dataShot == note) {
                         reference.child(dataset.key.toString()).removeValue()
+                        if (note.images != null){
+                            for (count in 0 until note.images!!.size){
+                                FirebaseStorage.getInstance()
+                                    .getReference("images/" + note.title + note.body + count.toString())
+                                    .delete().await()
+                            }
+                        }
                         break
                     }
                 }
