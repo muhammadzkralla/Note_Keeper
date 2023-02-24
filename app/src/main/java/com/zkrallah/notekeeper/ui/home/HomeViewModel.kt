@@ -4,10 +4,7 @@ import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
 import com.zkrallah.notekeeper.local.NoteDatabase
@@ -35,25 +32,19 @@ class HomeViewModel : ViewModel() {
 
     fun syncFirebase(list: List<Note>, authorId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            FirebaseDatabase.getInstance().getReference("Users")
+            val reference = FirebaseDatabase.getInstance().getReference("Users")
                 .child(authorId).child("Notes")
-                .addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val onlineSet = mutableSetOf<Note>()
-                        for (dataset in snapshot.children)
-                            onlineSet.add(dataset.getValue(Note::class.java)!!)
 
-                        val offlineSet = list.toSet()
-                        val all = offlineSet union onlineSet
-                        val common = offlineSet intersect onlineSet
-                        val final = all subtract common
-                        conflicts.postValue(final.toList())
-                    }
+            val snapshot = reference.get().await()
+            val onlineSet = mutableSetOf<Note>()
+            for (dataset in snapshot.children)
+                onlineSet.add(dataset.getValue(Note::class.java)!!)
 
-                    override fun onCancelled(error: DatabaseError) {
-                        TODO("Not yet implemented")
-                    }
-                })
+            val offlineSet = list.toSet()
+            val all = offlineSet union onlineSet
+            val common = offlineSet intersect onlineSet
+            val final = all subtract common
+            conflicts.postValue(final.toList())
         }
     }
 
@@ -91,9 +82,7 @@ class HomeViewModel : ViewModel() {
             for (note in toBeSynced) {
                 if (!local.contains(note)) {
                     var images = listOf<String>()
-                    if (note.images != null) {
-                        images = downloadImages(note)
-                    }
+                    if (note.images != null) images = downloadImages(note)
 
                     database.noteDAO().insert(
                         Note(
@@ -114,32 +103,21 @@ class HomeViewModel : ViewModel() {
             val reference = FirebaseDatabase.getInstance().getReference("Users")
                 .child(authorId).child("Notes")
 
-            reference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    for (note in toBeRemoved) {
-                        for (dataset in snapshot.children) {
-                            val dataShot = dataset.getValue(Note::class.java)!!
-                            if (dataShot == note) {
-                                reference.child(dataset.key.toString()).removeValue()
-                                break
-                            }
-                        }
-                    }
-
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-
-            })
-            viewModelScope.launch(Dispatchers.IO) {
-                for (note in toBeRemoved) {
-                    if (local.contains(note)) {
-                        database.noteDAO().deleteNote(note.id)
+            val snapshot = reference.get().await()
+            for (note in toBeRemoved) {
+                for (dataset in snapshot.children) {
+                    val dataShot = dataset.getValue(Note::class.java)!!
+                    if (dataShot == note) {
+                        reference.child(dataset.key.toString()).removeValue()
+                        break
                     }
                 }
             }
+        }
+        viewModelScope.launch(Dispatchers.IO) {
+            for (note in toBeRemoved)
+                if (local.contains(note))
+                    database.noteDAO().deleteNote(note.id)
         }
     }
 
