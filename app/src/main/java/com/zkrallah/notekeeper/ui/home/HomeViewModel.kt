@@ -68,31 +68,24 @@ class HomeViewModel : ViewModel() {
                 .getReference("Users")
                 .child(authorId).child("Notes")
 
-            reference.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val onlineSet = mutableSetOf<Note>()
-                    for (dataset in snapshot.children)
-                        onlineSet.add(dataset.getValue(Note::class.java)!!)
+            val snapshot = reference.get().await()
+            val onlineSet = mutableSetOf<Note>()
+            for (dataset in snapshot.children)
+                onlineSet.add(dataset.getValue(Note::class.java)!!)
 
-                    for (note in toBeSynced) {
-                        if (!onlineSet.contains(note)) {
-                            val map = mutableMapOf<String, Any>(
-                                "title" to note.title,
-                                "body" to note.body,
-                                "date" to note.date,
-                                "author" to note.author
-                            )
-                            if (note.images != null) map["images"] = getUrls(note)
+            for (note in toBeSynced) {
+                if (!onlineSet.contains(note)) {
+                    val map = mutableMapOf<String, Any>(
+                        "title" to note.title,
+                        "body" to note.body,
+                        "date" to note.date,
+                        "author" to note.author
+                    )
+                    if (note.images != null) map["images"] = getUrls(note)
 
-                            reference.push().setValue(map)
-                        }
-                    }
+                    reference.push().setValue(map)
                 }
-
-                override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
-                }
-            })
+            }
         }
         viewModelScope.launch(Dispatchers.IO) {
             for (note in toBeSynced) {
