@@ -15,7 +15,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:maxHeight="300dp">
+        android:maxHeight="300dp"
+        android:background="@color/golden">
 
         <TextView
             android:id="@+id/title"
@@ -40,6 +41,7 @@
             android:layout_marginStart="20dp"
             android:layout_marginTop="5dp"
             android:text="Body"
+            android:textColor="@color/light_brown"
             android:layout_marginBottom="10dp"
             android:padding="8dp"
             android:textSize="20sp"
@@ -55,6 +57,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginEnd="12dp"
             android:text="date"
+            android:textColor="@color/light_brown"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
