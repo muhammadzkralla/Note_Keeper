@@ -85,12 +85,16 @@ class AddNoteActivity : AppCompatActivity() {
 
                 for (i in 0 until count!!) {
                     val imageUri: Uri = data.clipData?.getItemAt(i)!!.uri
+                    this.contentResolver
+                        .takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     imageUris.add(imageUri.toString())
                 }
 
             } else if (data?.data != null) {
                 // if single image is selected
                 val imageUri: Uri = data.data!!
+                this.contentResolver
+                    .takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 imageUris.add(imageUri.toString())
             }
             binding.images.adapter = AddNoteAdapter(imageUris)
