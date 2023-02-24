@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.zkrallah.notekeeper.R
+import com.zkrallah.notekeeper.RandomQuote
 import com.zkrallah.notekeeper.adapter.HomeAdapter
 import com.zkrallah.notekeeper.adapter.SyncNoteAdapter
 import com.zkrallah.notekeeper.databinding.ActivityHomeBinding
@@ -129,7 +131,26 @@ class HomeActivity : AppCompatActivity() {
         builder.setPositiveButton("SYNC") { _, _ ->
             val notesToBeDeleted = (conflicts subtract  notesToBeSynced) as MutableSet<Note>
             viewModel.syncNotes(notes, notesToBeSynced, notesToBeDeleted, uid)
+            buildLoadingDialog()
+            dialog.show()
+            viewModel.loadingState.observe(this){ state ->
+                if (state){
+                    finish()
+                    startActivity(intent)
+                }
+            }
         }
+        dialog = builder.create()
+    }
+
+    private fun buildLoadingDialog() {
+        val inflater = this.layoutInflater
+        val dialogView = inflater.inflate(R.layout.loading_dialog, null)
+        val quoteTV = dialogView.findViewById<TextView>(R.id.quote)
+        quoteTV.text = RandomQuote().randomQuote
+        val builder = AlertDialog.Builder(this)
+        builder.setView(dialogView)
+        builder.setCancelable(false)
         dialog = builder.create()
     }
 

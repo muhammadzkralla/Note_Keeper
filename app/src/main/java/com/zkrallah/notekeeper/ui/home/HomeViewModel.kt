@@ -10,6 +10,7 @@ import com.google.firebase.storage.UploadTask
 import com.zkrallah.notekeeper.local.NoteDatabase
 import com.zkrallah.notekeeper.local.entities.Note
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
@@ -23,6 +24,8 @@ class HomeViewModel : ViewModel() {
     val userNotes = _userNotes
     private val _conflicts = MutableLiveData<List<Note>>()
     val conflicts = _conflicts
+    private val _loadingState = MutableLiveData(false)
+    val loadingState = _loadingState
 
     fun getUserNotes(authorId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -54,7 +57,7 @@ class HomeViewModel : ViewModel() {
         toBeDeleted: MutableSet<Note>,
         authorId: String
     ) {
-        viewModelScope.launch(Dispatchers.IO) {
+        val onlineJob = viewModelScope.launch(Dispatchers.IO) {
             val reference = FirebaseDatabase.getInstance()
                 .getReference("Users")
                 .child(authorId).child("Notes")
@@ -78,7 +81,7 @@ class HomeViewModel : ViewModel() {
                 }
             }
         }
-        viewModelScope.launch(Dispatchers.IO) {
+        val offlineJob = viewModelScope.launch(Dispatchers.IO) {
             for (note in toBeSynced) {
                 if (!local.contains(note)) {
                     var images = listOf<String>()
@@ -95,7 +98,17 @@ class HomeViewModel : ViewModel() {
                 }
             }
         }
-        deleteUnwantedNotes(local, toBeDeleted, authorId)
+        val deletionJob = viewModelScope.launch(Dispatchers.IO)
+        { deleteUnwantedNotes(local, toBeDeleted, authorId)  }
+        val jobs = listOf(
+            onlineJob,
+            offlineJob,
+            deletionJob
+        )
+        viewModelScope.launch {
+            jobs.joinAll()
+            _loadingState.value = true
+        }
     }
 
     private fun deleteUnwantedNotes(local: List<Note>, toBeRemoved: Set<Note>, authorId: String) {
