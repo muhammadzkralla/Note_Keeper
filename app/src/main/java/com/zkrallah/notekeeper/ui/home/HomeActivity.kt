@@ -14,9 +14,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.zkrallah.notekeeper.R
 import com.zkrallah.notekeeper.RandomQuote
@@ -56,7 +56,6 @@ class HomeActivity : AppCompatActivity() {
         buildAlertDialog()
 
         viewModel = ViewModelProvider(this)[HomeViewModel::class.java]
-        binding.recyclerHome.layoutManager = GridLayoutManager(this, 2)
         swipeRefreshLayout = binding.container
 
         updateUI()
@@ -86,6 +85,9 @@ class HomeActivity : AppCompatActivity() {
 
                     })
                     binding.recyclerHome.adapter = adapter
+                    val layoutManager =
+                        StaggeredGridLayoutManager(2, LinearLayoutManager.VERTICAL)
+                    binding.recyclerHome.layoutManager = layoutManager
                     notes = it
                 }
             }
