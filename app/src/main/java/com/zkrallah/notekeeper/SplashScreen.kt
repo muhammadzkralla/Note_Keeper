@@ -9,6 +9,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.zkrallah.notekeeper.databinding.ActivityHomeBinding
+import com.zkrallah.notekeeper.databinding.ActivitySplashScreenBinding
 import com.zkrallah.notekeeper.ui.home.HomeActivity
 
 
@@ -16,25 +18,28 @@ import com.zkrallah.notekeeper.ui.home.HomeActivity
 class SplashScreen : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
+    private lateinit var binding: ActivitySplashScreenBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_splash_screen)
+        binding = ActivitySplashScreenBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         auth = Firebase.auth
+        binding.quoteTv.text = RandomQuote().randomQuote
 
         val preferences = getSharedPreferences("rememberMe", MODE_PRIVATE)
         val state = preferences.getString("remember", "false")
-        if (state.equals("true")){
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-            startActivity(intent)
-        }else {
-            Handler(Looper.getMainLooper()).postDelayed({
+        Handler(Looper.getMainLooper()).postDelayed({
+            if (state.equals("true")){
+                val intent = Intent(this, HomeActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                startActivity(intent)
+            }else {
                 val intent = Intent(this, MainActivity::class.java)
                 intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 startActivity(intent)
-            }, 2000)
-        }
+            }
+        }, 2000)
     }
 }

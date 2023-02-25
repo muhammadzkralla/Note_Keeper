@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -11,7 +12,8 @@
     <color name="light_black">#20181c</color>
     <color name="golden">#fba247</color>
     <color name="matte_red">#59141d</color>
-    <color name="splash_bg">#FFF</color>
-    <color name="splash_txt">#59141d</color>
-    <color name="button_bg">#20181c</color>
+    <color name="splash_bg">#000</color>
+    <color name="splash_txt">#fba247</color>
+    <color name="button_bg">#fba247</color>
+
 </resources>

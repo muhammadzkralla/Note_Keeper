@@ -47,6 +47,7 @@
             android:layout_height="wrap_content"
             android:id = "@+id/login_btn"
             app:layout_constraintTop_toBottomOf="@+id/edt_pwd"
+            android:backgroundTint="@color/button_bg"
             android:layout_marginBottom="10dp"
             android:text = "LOGIN" />
 
@@ -55,6 +56,7 @@
             android:layout_height="wrap_content"
             android:id = "@+id/register_btn"
             app:layout_constraintTop_toBottomOf="@+id/login_btn"
+            app:backgroundTint="@color/button_bg"
             android:text = "REGISTER"
             android:layout_marginBottom="10dp"/>
 
