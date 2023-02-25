@@ -133,7 +133,7 @@ class HomeActivity : AppCompatActivity() {
             viewModel.syncNotes(notes, notesToBeSynced, notesToBeDeleted, uid)
             buildLoadingDialog()
             dialog.show()
-            viewModel.loadingState.observe(this){ state ->
+            viewModel.finishedLoadingState.observe(this){ state ->
                 if (state){
                     finish()
                     startActivity(intent)
