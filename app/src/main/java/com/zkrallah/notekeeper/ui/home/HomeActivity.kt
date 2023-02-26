@@ -3,6 +3,8 @@ package com.zkrallah.notekeeper.ui.home
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
@@ -121,7 +123,7 @@ class HomeActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.show_conflicts, null)
         recycler = dialogView.findViewById(R.id.conflicts)
         recycler.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.MyDialogTheme)
         builder.setView(dialogView)
         builder.setCancelable(true)
         builder.setTitle("CONFLICTS")
@@ -143,6 +145,7 @@ class HomeActivity : AppCompatActivity() {
             }
         }
         dialog = builder.create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     private fun buildLoadingDialog() {
@@ -150,10 +153,11 @@ class HomeActivity : AppCompatActivity() {
         val dialogView = inflater.inflate(R.layout.loading_dialog, null)
         val quoteTV = dialogView.findViewById<TextView>(R.id.quote)
         quoteTV.text = RandomQuote().randomQuote
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.MyDialogTheme)
         builder.setView(dialogView)
         builder.setCancelable(false)
         dialog = builder.create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
     }
 
     private fun isOnline(context: Context): Boolean {
@@ -184,7 +188,7 @@ class HomeActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val id = item.itemId
         if (id == R.id.account) {
-            val builder = AlertDialog.Builder(this)
+            val builder = AlertDialog.Builder(this, R.style.MyDialogTheme)
             builder.setCancelable(false)
             builder.setTitle("Your E-mail is : ")
             builder.setMessage(email)
@@ -200,6 +204,7 @@ class HomeActivity : AppCompatActivity() {
                 finish()
             }
             val dialog = builder.create()
+            dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
             dialog.show()
 
             return true

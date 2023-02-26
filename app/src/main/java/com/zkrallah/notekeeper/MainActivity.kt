@@ -3,6 +3,8 @@ package com.zkrallah.notekeeper
 
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
@@ -33,10 +35,11 @@ class MainActivity : AppCompatActivity() {
 
         val inflater = this.layoutInflater
         val dialogView = inflater.inflate(R.layout.progress_bar, null)
-        val builder = AlertDialog.Builder(this)
+        val builder = AlertDialog.Builder(this, R.style.MyDialogTheme)
         builder.setView(dialogView)
         builder.setCancelable(false)
         dialog = builder.create()
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
 
         auth = Firebase.auth
 

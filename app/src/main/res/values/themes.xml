@@ -13,6 +13,9 @@
         <item name="android:statusBarColor" >@color/light_black</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="MyDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:background">@drawable/dialog_bg</item>
+    </style>
     <style name="Theme.NoteKeeper.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
