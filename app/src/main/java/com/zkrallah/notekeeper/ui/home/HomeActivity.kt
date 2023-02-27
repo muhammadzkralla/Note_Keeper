@@ -8,6 +8,8 @@ import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -70,6 +72,12 @@ class HomeActivity : AppCompatActivity() {
             startActivity(Intent(this, AddNoteActivity::class.java))
         }
 
+        if (isOnline(this)){
+            Handler(Looper.getMainLooper()).postDelayed({
+                sync(notes)
+            }, 3000)
+        }
+
     }
 
     private fun updateUI() {
@@ -107,11 +115,7 @@ class HomeActivity : AppCompatActivity() {
                     notesToBeSynced = adapter.toBeSynced
                     recycler.adapter = adapter
                     dialog.show()
-                }else
-                    Toast.makeText(
-                        this@HomeActivity,
-                        "ALL SYNCED",
-                        Toast.LENGTH_SHORT).show()
+                }
 
                 swipeRefreshLayout.isRefreshing = false
             }
