@@ -1,5 +1,6 @@
 package com.zkrallah.notekeeper.ui.home
 
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -7,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.UploadTask
+import com.zkrallah.notekeeper.FileUtils
 import com.zkrallah.notekeeper.local.NoteDatabase
 import com.zkrallah.notekeeper.local.entities.Note
 import kotlinx.coroutines.Dispatchers
@@ -14,7 +16,6 @@ import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
-import java.io.File
 
 class HomeViewModel : ViewModel() {
 
@@ -26,6 +27,7 @@ class HomeViewModel : ViewModel() {
     val conflicts = _conflicts
     private val _finishedLoadingState = MutableLiveData(false)
     val finishedLoadingState = _finishedLoadingState
+    private val fileUtils : FileUtils = FileUtils(viewModelScope)
 
     fun getUserNotes(authorId: String) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -223,13 +225,15 @@ class HomeViewModel : ViewModel() {
         // For each image, download the file and store it locally.
         for (count in 0 until note.images!!.size){
             val file = storage.child("images/" + note.title + note.body + count.toString())
-            val localFile = File.createTempFile(note.title + note.body + count.toString(), "")
 
             // Blocking the thread to track the downloading process and once
             // They are downloaded, store their uri.
             runBlocking(Dispatchers.Unconfined) {
-                file.getFile(localFile).await()
-                uris.add(localFile.toURI().toString())
+                val image = file.getBytes(10 * 1024 * 1024).await()
+                val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
+                val uri = fileUtils.saveImage(bitmap, (note.title + note.body + count.toString()).trim())
+                if (uri != null) uris.add(uri)
+
             }
         }
         return uris
