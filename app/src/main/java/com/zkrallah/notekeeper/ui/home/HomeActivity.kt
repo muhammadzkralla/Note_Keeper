@@ -1,8 +1,11 @@
 package com.zkrallah.notekeeper.ui.home
 
+import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.net.ConnectivityManager
@@ -15,8 +18,11 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -45,11 +51,21 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var conflicts: MutableSet<Note>
     private lateinit var notesToBeSynced: MutableSet<Note>
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
+    private var isReadPermissionGranted = false
+    private var isWritePermissionGranted = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        permissionLauncher = registerForActivityResult(ActivityResultContracts
+            .RequestMultiplePermissions()) { permissions ->
+            isReadPermissionGranted = permissions[READ_EXTERNAL_STORAGE] ?: isReadPermissionGranted
+            isWritePermissionGranted = permissions[WRITE_EXTERNAL_STORAGE] ?: isWritePermissionGranted
+        }
+        requestPermission()
 
         preferences = getSharedPreferences("rememberMe", MODE_PRIVATE)
         uid = preferences.getString("userID", "").toString()
@@ -182,6 +198,24 @@ class HomeActivity : AppCompatActivity() {
             }
         }
         return false
+    }
+
+    private fun requestPermission(){
+        isReadPermissionGranted = ContextCompat.checkSelfPermission(
+            this,
+            READ_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+
+        isWritePermissionGranted = ContextCompat.checkSelfPermission(
+            this,
+            WRITE_EXTERNAL_STORAGE
+        ) == PackageManager.PERMISSION_GRANTED
+
+        val permissionRequest: MutableList<String> = ArrayList()
+        if (!isReadPermissionGranted) permissionRequest.add(READ_EXTERNAL_STORAGE)
+        if (!isWritePermissionGranted) permissionRequest.add(WRITE_EXTERNAL_STORAGE)
+
+        if (permissionRequest.isNotEmpty())permissionLauncher.launch(permissionRequest.toTypedArray())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
