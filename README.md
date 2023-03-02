@@ -1,7 +1,7 @@
 <h1 align = "center" >Offline/Online Note App : <h1/>
 <br>
 - A Note App operating on two databases, one online (Firebase Realtime Database)
- and another offline (Room Database). The app syncronize both using Kotlin Coroutines Features. 
+ and another offline (Room Database). The app synchronizes both using Kotlin Coroutines Features. 
  
 
 <h2>App Features :<h2/>
@@ -17,13 +17,10 @@
 <table align="center">
   <tr>
     <td> 
-      <img src ="https://user-images.githubusercontent.com/54005330/222494067-f30b1c0b-a7a0-494d-8fe6-f52602d59f4d.PNG"/>
+      <img src ="https://user-images.githubusercontent.com/54005330/222503625-02bdb4bf-98f7-47ed-b8d7-ee48e46070d8.PNG"/>
     </td>
     <td>
-      <img src ="https://user-images.githubusercontent.com/54005330/222494235-a5d3d5d2-3399-40f5-8b96-26b57c48ad1a.png"/>
-    </td>
-    <td>
-      <img src ="https://user-images.githubusercontent.com/54005330/222494322-5bc64603-5e2f-413b-9b75-3a86e8912817.PNG"/>
+      <img src ="https://user-images.githubusercontent.com/54005330/222503680-15641c2b-0fb3-44f0-bf44-6d7a4ea37c55.PNG"/>
     </td>
   </tr>
 
@@ -32,13 +29,36 @@
 <table align="center">
   <tr>
     <td> 
-      <img src ="https://user-images.githubusercontent.com/54005330/222494455-dd7a2f87-dd9f-4bf0-8fc9-1e53cc8555b9.PNG"/>
+      <img src ="https://user-images.githubusercontent.com/54005330/222503752-d4cae149-7c48-487b-b85c-27037fae4b5c.PNG"/>
+    </td>
+    <td> 
+      <img src ="https://user-images.githubusercontent.com/54005330/222504232-d91c56b5-a262-40fc-8f98-7e8df3d6c717.PNG"/>
+    </td>
+  </tr>
+</table>
+
+<table align="center">
+  <tr>
+    <td> 
+      <img src ="https://user-images.githubusercontent.com/54005330/222503956-05930286-50f3-4e07-ad17-93afe2f39aee.PNG"/>
     </td>
     <td>
-      <img src ="https://user-images.githubusercontent.com/54005330/222494560-ffd8c394-b199-4269-839d-bf5f6968c2d7.PNG"/>
+      <img src ="https://user-images.githubusercontent.com/54005330/222504037-91e3e8eb-4ddc-4d29-b24b-c03bb999259e.PNG"/>
     </td>
     <td>
-      <img src ="https://user-images.githubusercontent.com/54005330/222494624-e5aedfcb-488e-4866-bc4a-e0a55d1edb95.PNG"/>
+      <img src ="https://user-images.githubusercontent.com/54005330/222503819-7d0bbda1-072c-4c00-bf47-269930fdd9ea.PNG"/>
+    </td>
+  </tr>
+
+</table>
+
+<table align="center">
+  <tr>
+    <td>
+      <img src ="https://user-images.githubusercontent.com/54005330/222504273-b3cffd38-a6f2-4591-9a86-808d3e3675e7.PNG"/>
+    </td>
+    <td>
+      <img src ="https://user-images.githubusercontent.com/54005330/222504334-49fc4c2e-d7ff-4d00-9a07-61284d509933.PNG"/>
     </td>
   </tr>
 
