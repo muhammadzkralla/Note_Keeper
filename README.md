@@ -13,7 +13,7 @@
 6- Once the user enters the app it automatically scans any unsynced Notes and offers it to the user whether to delete or keep.  <br>
 
 
-<br> <br> <br> <hr>
+<br> <hr>
 <table align="center">
   <tr>
     <td> 
