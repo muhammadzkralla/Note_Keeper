@@ -14,6 +14,7 @@
 
 
 <br> <hr>
+The Welcome screens :
 <table align="center">
   <tr>
     <td> 
@@ -26,6 +27,7 @@
 
 </table>
 
+Home screen and Add Note Screen :
 <table align="center">
   <tr>
     <td> 
@@ -37,6 +39,7 @@
   </tr>
 </table>
 
+Showing a note, without an image, with one image and with multiple images :
 <table align="center">
   <tr>
     <td> 
@@ -52,6 +55,7 @@
 
 </table>
 
+The Sycnchronization process :
 <table align="center">
   <tr>
     <td>
