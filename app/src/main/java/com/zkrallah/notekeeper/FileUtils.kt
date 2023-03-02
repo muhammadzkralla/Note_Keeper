@@ -1,14 +1,15 @@
+@file:Suppress("DEPRECATION")
+
 package com.zkrallah.notekeeper
 
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Environment
-import kotlinx.coroutines.CoroutineScope
 import java.io.File
 import java.io.FileOutputStream
 
-class FileUtils(private val scope: CoroutineScope) {
+class FileUtils {
 
     fun saveImage(image: Bitmap, id : String): String? {
         var savedImagePath: String? = null
