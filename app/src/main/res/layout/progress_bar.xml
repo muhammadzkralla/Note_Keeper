@@ -6,6 +6,7 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
+        android:indeterminateTint="@color/matte_red"
         style="?android:attr/progressBarStyle"
         android:layout_width="80dp"
         android:layout_height="80dp"
