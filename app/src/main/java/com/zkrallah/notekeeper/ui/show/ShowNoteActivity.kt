@@ -1,6 +1,7 @@
 package com.zkrallah.notekeeper.ui.show
 
 import android.os.Bundle
+import android.text.InputType
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -35,6 +36,8 @@ class ShowNoteActivity : AppCompatActivity() {
             viewModel.note.observe(this) {
                 currentNote = it
                 binding.title.editText?.setText(it.title)
+                binding.title.editText?.inputType = InputType.TYPE_NULL
+                binding.title.editText?.isFocusable = false
                 binding.body.editText?.setText(it.body)
                 binding.images.adapter = AddNoteAdapter(it.images)
             }
