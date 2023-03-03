@@ -9,7 +9,8 @@ class RandomQuote {
         "You know I'm better than Google keep right ?",
         "I think you are patient, right ?",
         "Just wait a sec :D",
-        "Did you sleep well today ?"
+        "Did you sleep well today ?",
+        "Gotta some fresh Notes for me ?"
     )
 
     val randomQuote = quotesList.random()

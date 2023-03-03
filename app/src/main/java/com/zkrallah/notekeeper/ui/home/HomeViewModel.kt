@@ -15,7 +15,6 @@ import com.zkrallah.notekeeper.local.entities.Note
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.tasks.await
 import java.io.File
 
@@ -193,7 +192,7 @@ class HomeViewModel : ViewModel() {
      * and then return them as a list of String to add them to
      * the Note object in Firebase realtime database.
      */
-    private fun getUrls(note: Note): List<String> {
+    private suspend fun getUrls(note: Note): List<String> {
         val urls = mutableListOf<String>()
         val tasks = mutableListOf<UploadTask>()
         // Create the images root folder instance in the Firebase storage.
@@ -223,10 +222,8 @@ class HomeViewModel : ViewModel() {
 
         // Track the UploadTasks and once they complete,
         // store their download url.
-        runBlocking (Dispatchers.Unconfined) {
-            tasks.forEach {
-                urls.add(it.await().storage.downloadUrl.await().toString())
-            }
+        tasks.forEach {
+            urls.add(it.await().storage.downloadUrl.await().toString())
         }
         return urls
     }
@@ -236,7 +233,7 @@ class HomeViewModel : ViewModel() {
      * then return their uris as a list of strings to register their
      * location in the Room database.
      */
-    private fun downloadImages(note: Note): List<String> {
+    private suspend fun downloadImages(note: Note): List<String> {
         val uris = mutableListOf<String>()
         // Create the images root folder instance in the Firebase storage.
         val storage = FirebaseStorage.getInstance().reference
@@ -249,14 +246,12 @@ class HomeViewModel : ViewModel() {
 
             // Track the downloading process and once
             // They are downloaded, store their uri.
-            runBlocking (Dispatchers.Unconfined){
-                val image = file.getBytes(10 * 1024 * 1024).await()
-                val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
-                val uri = fileUtils.saveImage(bitmap, note.author.substring(0, 6)
-                        + note.title.replace(" ", "")
-                        + count.toString())
-                if (uri != null) uris.add(uri)
-            }
+            val image = file.getBytes(10 * 1024 * 1024).await()
+            val bitmap = BitmapFactory.decodeByteArray(image, 0, image.size)
+            val uri = fileUtils.saveImage(bitmap, note.author.substring(0, 6)
+                    + note.title.replace(" ", "")
+                    + count.toString())
+            if (uri != null) uris.add(uri)
         }
         return uris
     }
