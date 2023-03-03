@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
-import com.zkrallah.notekeeper.databinding.ActivityHomeBinding
 import com.zkrallah.notekeeper.databinding.ActivitySplashScreenBinding
 import com.zkrallah.notekeeper.ui.home.HomeActivity
 
